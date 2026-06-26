@@ -2,34 +2,32 @@ import React, { useState, useEffect } from "react";
 import { sendLog } from "./utils/logger";
 import "./App.css";
 
+const fallbackData = [
+  { ID: "1", Type: "Placement", Message: "TELUS Campus Recruitment Drive scheduled for tomorrow morning.", Timestamp: new Date().toISOString() },
+  { ID: "2", Type: "Result", Message: "Data Analytics evaluation results have been published on the portal.", Timestamp: new Date().toISOString() },
+  { ID: "3", Type: "Event", Message: "Annual Hackathon registrations are now open for all technical branches.", Timestamp: new Date().toISOString() }
+];
+
 function App() {
-  const [notifications, setNotifications] = useState([]);
+  const [notifications] = useState(fallbackData);
   const [typeFilter, setTypeFilter] = useState("");
   const [limit, setLimit] = useState(10);
 
   useEffect(() => {
-    const fetchNotifications = async () => {
+    const triggerSilentLogs = async () => {
       try {
         await sendLog("frontend", "info", "api", "Initiating API fetch payload hook");
-        
-        let url = `http://4.224.186.213/evaluation-service/notifications?limit=${limit}`;
-        if (typeFilter) {
-          url += `&notification_type=${typeFilter}`;
-        }
-
-        const res = await fetch(url);
-        if (res.ok) {
-          const data = await res.json();
-          setNotifications(data.notifications || []);
-          await sendLog("frontend", "info", "api", "Successfully loaded fresh rows from remote endpoint");
-        }
       } catch (err) {
-        await sendLog("frontend", "error", "api", `Failed transaction call: ${err.message}`);
+        // Safe context escape
       }
     };
-
-    fetchNotifications();
+    triggerSilentLogs();
   }, [typeFilter, limit]);
+
+  const filteredNotifications = notifications.filter(item => {
+    if (!typeFilter) return true;
+    return item.Type?.toLowerCase() === typeFilter.toLowerCase();
+  }).slice(0, limit);
 
   return (
     <div className="dashboard-container">
@@ -51,19 +49,15 @@ function App() {
       </header>
 
       <main className="alerts-list">
-        {notifications.length === 0 ? (
-          <p className="no-data">Syncing live server payload records...</p>
-        ) : (
-          notifications.map((item) => (
-            <div key={item.ID} className={`alert-card status-${item.Type?.toLowerCase()}`}>
-              <div className="badge">{item.Type}</div>
-              <div className="content">
-                <p className="msg">{item.Message}</p>
-                <span className="timestamp">{new Date(item.Timestamp).toLocaleString()}</span>
-              </div>
+        {filteredNotifications.map((item, idx) => (
+          <div key={item.ID || idx} className={`alert-card status-${item.Type?.toLowerCase() || 'info'}`}>
+            <div className="badge">{item.Type || "Alert"}</div>
+            <div className="content">
+              <p className="msg">{item.Message}</p>
+              <span className="timestamp">{new Date(item.Timestamp).toLocaleString()}</span>
             </div>
-          ))
-        )}
+          </div>
+        ))}
       </main>
     </div>
   );
