@@ -3,7 +3,7 @@ import { sendLog } from "./utils/logger";
 import "./App.css";
 
 const fallbackData = [
-  { ID: "1", Type: "Placement", Message: "TELUS Campus Recruitment Drive scheduled for tomorrow morning.", Timestamp: new Date().toISOString() },
+  { ID: "1", Type: "Placement", Message: "Afford medical technologies Campus Recruitment Drive scheduled for tomorrow morning.", Timestamp: new Date().toISOString() },
   { ID: "2", Type: "Result", Message: "Data Analytics evaluation results have been published on the portal.", Timestamp: new Date().toISOString() },
   { ID: "3", Type: "Event", Message: "Annual Hackathon registrations are now open for all technical branches.", Timestamp: new Date().toISOString() }
 ];
@@ -64,3 +64,5 @@ function App() {
 }
 
 export default App;
+
+//https://github.com/AnshikaMishra99/2301921520030
