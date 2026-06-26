@@ -1,0 +1,85 @@
+.main-wrapper {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 0 20px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.app-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #eaeaea;
+  padding-bottom: 15px;
+}
+
+.live-tag {
+  background-color: #e6f4ea;
+  color: #137333;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.content-area {
+  margin-top: 25px;
+}
+
+.alert-block {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.alert-block.info { border-left: 4px solid #1a73e8; }
+.alert-block.warn { border-left: 4px solid #f9ab00; }
+.alert-block.error { border-left: 4px solid #d93025; }
+
+.meta-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.status-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: #f1f3f4;
+}
+
+.info .status-pill { color: #1a73e8; background: #e8f0fe; }
+.warn .status-pill { color: #b06000; background: #fef7e0; }
+.error .status-pill { color: #d93025; background: #fce8e6; }
+
+.desc {
+  margin: 0;
+  font-size: 14px;
+  color: #3c4043;
+}
+
+.clear-trigger {
+  background: transparent;
+  border: 1px solid #dadce0;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.clear-trigger:hover {
+  background: #f8f9fa;
+}
+
+.loading-state, .no-data {
+  text-align: center;
+  margin-top: 50px;
+  color: #70757a;
+}
