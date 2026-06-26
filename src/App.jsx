@@ -3,58 +3,68 @@ import { sendLog } from "./utils/logger";
 import "./App.css";
 
 function App() {
-  const [alerts, setAlerts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState([]);
+  const [typeFilter, setTypeFilter] = useState("");
+  const [limit, setLimit] = useState(10);
 
-  
   useEffect(() => {
-    sendLog("frontend", "info", "page", "User accessed dashboard home interface");
+    const fetchNotifications = async () => {
+      try {
+        await sendLog("frontend", "info", "api", "Initiating API fetch payload hook");
+        
+        let url = `http://4.224.186.213/evaluation-service/notifications?limit=${limit}`;
+        if (typeFilter) {
+          url += `&notification_type=${typeFilter}`;
+        }
 
-    
-    const systemAlerts = [
-      { id: "id-101", severity: "info", text: "Database cluster sync completed without delays." },
-      { id: "id-102", severity: "warn", text: "Memory threshold exceeding 80% on primary node." },
-      { id: "id-103", severity: "error", text: "Webhook payload verification handshake failed." }
-    ];
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          setNotifications(data.notifications || []);
+          await sendLog("frontend", "info", "api", "Successfully loaded fresh rows from remote endpoint");
+        }
+      } catch (err) {
+        await sendLog("frontend", "error", "api", `Failed transaction call: ${err.message}`);
+      }
+    };
 
-    setAlerts(systemAlerts);
-    setLoading(false);
-    sendLog("frontend", "info", "api", "Initial diagnostic list successfully fetched");
-  }, []);
-
-  const handleRemoveAlert = (id) => {
-    setAlerts(alerts.filter(alert => alert.id !== id));
-    sendLog("frontend", "debug", "component", `Card instance context ${id} closed by interaction`);
-  };
-
-  if (loading) {
-    return <div className="loading-state">Syncing dashboard instances...</div>;
-  }
+    fetchNotifications();
+  }, [typeFilter, limit]);
 
   return (
-    <div className="main-wrapper">
-      <header className="app-bar">
-        <h2>System Monitoring Dashboard</h2>
-        <span className="live-tag">Live Feed</span>
+    <div className="dashboard-container">
+      <header className="dashboard-header">
+        <h1>System Monitoring Dashboard</h1>
+        <div className="filters-panel">
+          <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+            <option value="">All Types</option>
+            <option value="Event">Event</option>
+            <option value="Result">Result</option>
+            <option value="Placement">Placement</option>
+          </select>
+          <select value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
+            <option value={10}>Top 10</option>
+            <option value={15}>Top 15</option>
+            <option value={20}>Top 20</option>
+          </select>
+        </div>
       </header>
 
-      <div className="content-area">
-        {alerts.length === 0 ? (
-          <div className="no-data">Clear state: No critical metrics to view.</div>
+      <main className="alerts-list">
+        {notifications.length === 0 ? (
+          <p className="no-data">Syncing live server payload records...</p>
         ) : (
-          alerts.map((alert) => (
-            <div key={alert.id} className={`alert-block ${alert.severity}`}>
-              <div className="meta-info">
-                <span className="status-pill">{alert.severity.toUpperCase()}</span>
-                <p className="desc">{alert.text}</p>
+          notifications.map((item) => (
+            <div key={item.ID} className={`alert-card status-${item.Type?.toLowerCase()}`}>
+              <div className="badge">{item.Type}</div>
+              <div className="content">
+                <p className="msg">{item.Message}</p>
+                <span className="timestamp">{new Date(item.Timestamp).toLocaleString()}</span>
               </div>
-              <button className="clear-trigger" onClick={() => handleRemoveAlert(alert.id)}>
-                Dismiss
-              </button>
             </div>
           ))
         )}
-      </div>
+      </main>
     </div>
   );
 }
